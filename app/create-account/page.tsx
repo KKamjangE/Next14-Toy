@@ -14,7 +14,7 @@ export default function CreateAccount() {
                         type="text"
                         placeholder="Username"
                         required
-                        className="h-10 w-full rounded-md border-none bg-transparent ring-1 ring-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        className="placeholder:text-neutral-400focus:outline-none h-10 w-full rounded-md border-none bg-transparent ring-1 ring-neutral-200 focus:ring-2 focus:ring-orange-500"
                     />
                     <span className="font-medium text-red-500">
                         Input error
