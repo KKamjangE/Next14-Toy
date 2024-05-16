@@ -2,7 +2,7 @@ import FormButton from "@/app/components/form-btn";
 import FormInput from "@/app/components/form-input";
 import SocialLogin from "@/app/components/social-login";
 
-export default function LoginAccount() {
+export default function Login() {
     return (
         <div className="flex flex-col gap-10 px-6 py-8">
             <div className="flex flex-col gap-2 *:font-medium">
