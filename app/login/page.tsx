@@ -1,20 +1,21 @@
+"use client";
+
 import FormButton from "@/app/components/form-btn";
 import FormInput from "@/app/components/form-input";
 import SocialLogin from "@/app/components/social-login";
+import { handleForm } from "@/app/login/actions";
+import { useFormState } from "react-dom";
 
 export default function Login() {
-    const handleForm = async (formData: FormData) => {
-        "use server";
+    const [state, action] = useFormState(handleForm, null);
 
-        console.log(formData.get("email"), formData.get("password"));
-    };
     return (
         <div className="flex flex-col gap-10 px-6 py-8">
             <div className="flex flex-col gap-2 *:font-medium">
                 <h1 className="text-2xl">안녕하세요!</h1>
                 <h2 className="text-xl">Log in with email and password.</h2>
             </div>
-            <form className="flex flex-col gap-3" action={handleForm}>
+            <form action={action} className="flex flex-col gap-3">
                 <FormInput
                     name="email"
                     type="email"
@@ -26,10 +27,10 @@ export default function Login() {
                     name="password"
                     type="password"
                     placeholder="Password"
-                    errors={[]}
+                    errors={state?.errors ?? []}
                     required
                 />
-                <FormButton loading={false} text="Create account" />
+                <FormButton text="Create account" />
             </form>
             <SocialLogin />
         </div>
