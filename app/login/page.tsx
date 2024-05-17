@@ -28,7 +28,7 @@ export default function Login() {
                     placeholder="Password"
                     required
                 />
-                <FormButton text="Create account" />
+                <FormButton text="Log in" />
             </form>
             <SocialLogin />
         </div>
