@@ -1,4 +1,4 @@
-import React, { HTMLInputTypeAttribute, InputHTMLAttributes } from "react";
+import React, { InputHTMLAttributes } from "react";
 
 interface InputProps {
     errors?: string[];
@@ -14,11 +14,8 @@ export default function Input({
         <div className="flex flex-col gap-2">
             <input
                 name={name}
-                // type={type}
-                // placeholder={placeholder}
-                // required={required}
-                {...rest}
                 className="placeholder:text-neutral-400focus:outline-none h-10 w-full rounded-md border-none bg-transparent ring-2 ring-neutral-200 transition focus:ring-4 focus:ring-orange-500"
+                {...rest}
             />
             {errors.map((error, index) => (
                 <span key={index} className="font-medium text-red-500">
