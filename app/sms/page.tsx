@@ -1,28 +1,51 @@
+"use client";
+
 import Button from "@/app/components/button";
 import Input from "@/app/components/input";
-import SocialLogin from "@/app/components/social-login";
+import { smsLogin } from "@/app/sms/actions";
+import { useFormState } from "react-dom";
+
+const initialState = {
+    token: false,
+    error: undefined,
+};
 
 export default function SMSLogin() {
+    const [state, dispatch] = useFormState(smsLogin, initialState);
     return (
         <div className="flex flex-col gap-10 px-6 py-8">
             <div className="flex flex-col gap-2 *:font-medium">
                 <h1 className="text-2xl">SMS Login</h1>
                 <h2 className="text-xl">Verify your phone number.</h2>
             </div>
-            <form className="flex flex-col gap-3">
-                <Input
-                    type="number"
-                    placeholder="Phone number"
-                    errors={[]}
-                    required
+            <form action={dispatch} className="flex flex-col gap-3">
+                {state.token ? (
+                    <Input
+                        key="token"
+                        name="token"
+                        type="number"
+                        placeholder="Verification code"
+                        required
+                        autoComplete="off"
+                        min={100000}
+                        max={999999}
+                    />
+                ) : (
+                    <Input
+                        key="phone"
+                        name="phone"
+                        type="text"
+                        autoComplete="off"
+                        placeholder="Phone number"
+                        required
+                        errors={state.error?.formErrors}
+                    />
+                )}
+                <Button
+                    text={
+                        state.token ? "Verify Token" : "Send Verification SMS"
+                    }
                 />
-                <Input
-                    type="number"
-                    placeholder="Verification code"
-                    errors={[]}
-                    required
-                />
-                <Button loading={false} text="Verify" />
             </form>
         </div>
     );
