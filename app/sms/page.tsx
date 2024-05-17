@@ -26,16 +26,15 @@ export default function SMSLogin() {
                         type="number"
                         placeholder="Verification code"
                         required
-                        autoComplete="off"
                         min={100000}
                         max={999999}
+                        errors={state.error?.formErrors}
                     />
                 ) : (
                     <Input
                         key="phone"
                         name="phone"
                         type="text"
-                        autoComplete="off"
                         placeholder="Phone number"
                         required
                         errors={state.error?.formErrors}
