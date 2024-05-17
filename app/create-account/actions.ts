@@ -1,10 +1,7 @@
 "use server";
 
+import { PASSWORD_MIN_LENGTH, PASSWORD_REGEX } from "@/app/lib/constants";
 import { z } from "zod";
-
-const passwordRegex = new RegExp(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*?[#?!@$%^&*-]).+$/,
-);
 
 const checkPassword = ({
     password,
@@ -21,8 +18,6 @@ const formSchema = z
                 invalid_type_error: "이름은 문자만 입력 가능합니다.",
                 required_error: "이름을 필수 입니다.",
             })
-            .min(3, "너무 짧습니다.")
-            .max(10, "너무 깁니다.")
             .toLowerCase()
             .trim()
             .transform((username) => `✨ ${username} ✨`),
@@ -35,9 +30,9 @@ const formSchema = z
                 required_error: "비밀번호는 필수 입니다.",
                 invalid_type_error: "비밀번호는 문자만 입력 가능합니다.",
             })
-            .min(10, "너무 짧습니다.")
+            .min(PASSWORD_MIN_LENGTH, "너무 짧습니다.")
             .regex(
-                passwordRegex,
+                PASSWORD_REGEX,
                 "A password must have lowercase, UPPERCASE, a number and special characters.",
             ),
         confirm_password: z
@@ -45,7 +40,7 @@ const formSchema = z
                 required_error: "비밀번호는 필수 입니다.",
                 invalid_type_error: "비밀번호는 문자만 입력 가능합니다.",
             })
-            .min(10, "너무 짧습니다."),
+            .min(PASSWORD_MIN_LENGTH, "너무 짧습니다."),
     })
     .refine(checkPassword, {
         // object 전체에서 에러를 가져온다.
