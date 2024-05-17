@@ -1,6 +1,10 @@
 "use server";
 
-import { PASSWORD_MIN_LENGTH, PASSWORD_REGEX } from "@/app/lib/constants";
+import {
+    PASSWORD_MIN_LENGTH,
+    PASSWORD_REGEX,
+    PASSWORD_REGEX_ERROR,
+} from "@/app/lib/constants";
 import { z } from "zod";
 
 const checkPassword = ({
@@ -31,10 +35,7 @@ const formSchema = z
                 invalid_type_error: "비밀번호는 문자만 입력 가능합니다.",
             })
             .min(PASSWORD_MIN_LENGTH, "너무 짧습니다.")
-            .regex(
-                PASSWORD_REGEX,
-                "A password must have lowercase, UPPERCASE, a number and special characters.",
-            ),
+            .regex(PASSWORD_REGEX, PASSWORD_REGEX_ERROR),
         confirm_password: z
             .string({
                 required_error: "비밀번호는 필수 입니다.",
