@@ -19,30 +19,6 @@ const checkPassword = ({
     confirm_password: string;
 }) => password === confirm_password;
 
-const checkUniqueUsername = async (username: string) => {
-    const user = await db.user.findUnique({
-        where: {
-            username,
-        },
-        select: { id: true },
-    });
-
-    return !Boolean(user);
-};
-
-const checkUniqueEmail = async (email: string) => {
-    const user = await db.user.findUnique({
-        where: {
-            email,
-        },
-        select: {
-            id: true,
-        },
-    });
-
-    return !Boolean(user);
-};
-
 const formSchema = z
     .object({
         username: z
@@ -51,16 +27,11 @@ const formSchema = z
                 required_error: "이름을 필수 입니다.",
             })
             .toLowerCase()
-            .trim()
-            .refine(checkUniqueUsername, "This username is already taken."),
+            .trim(),
         email: z
             .string({ invalid_type_error: "이메일은 문자만 입력 가능합니다." })
             .email({ message: "이메일 형식에 맞지 않습니다." })
-            .toLowerCase()
-            .refine(
-                checkUniqueEmail,
-                "There is an account already registered with that email.",
-            ),
+            .toLowerCase(),
         password: z
             .string({
                 required_error: "비밀번호는 필수 입니다.",
@@ -74,6 +45,42 @@ const formSchema = z
                 invalid_type_error: "비밀번호는 문자만 입력 가능합니다.",
             })
             .min(PASSWORD_MIN_LENGTH, "너무 짧습니다."),
+    })
+    .superRefine(async ({ username }, ctx) => {
+        const user = await db.user.findUnique({
+            where: {
+                username,
+            },
+            select: { id: true },
+        });
+
+        if (user) {
+            ctx.addIssue({
+                code: "custom",
+                message: "This username is already taken",
+                path: ["username"],
+                fatal: true, // 치명적 이슈
+            });
+            return z.NEVER; // 이후 refine은 실행하지 않는다.
+        }
+    })
+    .superRefine(async ({ email }, ctx) => {
+        const user = await db.user.findUnique({
+            where: {
+                email,
+            },
+            select: { id: true },
+        });
+
+        if (user) {
+            ctx.addIssue({
+                code: "custom",
+                message: "This email is already taken",
+                path: ["email"],
+                fatal: true, // 치명적 이슈
+            });
+            return z.NEVER; // 이후 refine은 실행하지 않는다.
+        }
     })
     .refine(checkPassword, {
         // object 전체에서 에러를 가져온다.
