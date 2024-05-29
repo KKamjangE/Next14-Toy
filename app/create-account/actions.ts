@@ -91,10 +91,11 @@ export async function createAccount(prevState: any, formData: FormData) {
     };
 
     const result = await formSchema.safeParseAsync(data); // safeParse를 사용하면 error를 throw하지 않는다.
+    // zod 스키마 내부에서 Promise를 사용하기 때문에 safeParseAsync를 사용한다.
     if (!result.success) {
         return result.error.flatten();
     } else {
-        const hashedPassword = await bcrypt.hash(result.data.password, 12);
+        const hashedPassword = await bcrypt.hash(result.data.password, 12); // 비밀번호 암호화
 
         // 데이터베이스 저장 후 생성된 user id만 가져오기
         const user = await db.user.create({
