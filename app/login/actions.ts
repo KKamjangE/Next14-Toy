@@ -66,6 +66,7 @@ export async function login(prevState: any, formData: FormData) {
         if (ok) {
             const session = await getSession();
             session.id = user!.id; // 세션 쿠키에 id 저장
+            await session.save();
             redirect("/profile");
         } else {
             // zod 인 척 error 반환
