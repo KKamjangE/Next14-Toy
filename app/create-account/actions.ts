@@ -7,6 +7,10 @@ import {
 } from "@/lib/constants";
 import db from "@/lib/db";
 import { z } from "zod";
+import bcrypt from "bcrypt";
+import { getIronSession } from "iron-session";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const checkPassword = ({
     password,
@@ -90,10 +94,29 @@ export async function createAccount(prevState: any, formData: FormData) {
     if (!result.success) {
         return result.error.flatten();
     } else {
-        // check if the email is already used
-        // hash password
-        // save the user to db
-        // log the user in
-        // redirect "/home"
+        const hashedPassword = await bcrypt.hash(result.data.password, 12);
+
+        // 데이터베이스 저장 후 생성된 user id만 가져오기
+        const user = await db.user.create({
+            data: {
+                username: result.data.username,
+                email: result.data.email,
+                password: hashedPassword,
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        // 쿠키 세션 생성
+        const cookie = await getIronSession(cookies(), {
+            cookieName: "delicious-karrot",
+            password: process.env.COOKIE_PASSWORD!,
+        });
+
+        //@ts-ignore
+        cookie.id = user;
+        await cookie.save();
+        redirect("/profile");
     }
 }
