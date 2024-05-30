@@ -8,7 +8,7 @@ import {
 import db from "@/lib/db";
 import { z } from "zod";
 import bcrypt from "bcrypt";
-import getSession from "@/lib/session";
+import { setSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 const checkEmailExists = async (email: string) => {
@@ -64,9 +64,7 @@ export async function login(prevState: any, formData: FormData) {
         );
 
         if (ok) {
-            const session = await getSession();
-            session.id = user!.id; // 세션 쿠키에 id 저장
-            await session.save();
+            await setSession(user!.id);
             redirect("/profile");
         } else {
             // zod 인 척 error 반환
