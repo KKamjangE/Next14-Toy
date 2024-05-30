@@ -10,6 +10,8 @@ const publicOnlyUrls: Routes = {
     "/login": true,
     "/sms": true,
     "/create-account": true,
+    "/github/start": true,
+    "/github/complete": true,
 };
 
 // 미들웨어는 빠른 속도로 동작하기 위해 node.js 에서 동작하는게 아니라 경량 버전과 같은 Edge runtime에서 동작한다.
