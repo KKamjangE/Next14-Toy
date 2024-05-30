@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
 
     const newUser = await db.user.create({
         data: {
-            username: Boolean(existUserName) ? `${login}-gh` : login,
+            username: Boolean(existUserName) ? login + id : login,
             github_id: id + "",
             avatar: avatar_url,
         },
