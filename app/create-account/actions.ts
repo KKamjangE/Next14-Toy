@@ -55,6 +55,7 @@ const formSchema = z
         });
 
         if (user) {
+            // ctx(refine context)에 접근할 수 있다.
             ctx.addIssue({
                 code: "custom",
                 message: "This username is already taken",
