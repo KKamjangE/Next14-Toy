@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 export async function GET() {
     const formattedParams = new URLSearchParams({
         client_id: process.env.GITHUB_CLIENT_ID!,
@@ -7,5 +9,5 @@ export async function GET() {
 
     const finalUrl = `https://github.com/login/oauth/authorize?${formattedParams}`;
 
-    return Response.redirect(finalUrl);
+    return redirect(finalUrl);
 }
