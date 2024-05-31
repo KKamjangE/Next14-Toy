@@ -46,25 +46,6 @@ const formSchema = z
             })
             .min(PASSWORD_MIN_LENGTH, "너무 짧습니다."),
     })
-    .superRefine(async ({ username }, ctx) => {
-        const user = await db.user.findUnique({
-            where: {
-                username,
-            },
-            select: { id: true },
-        });
-
-        if (user) {
-            // ctx(refine context)에 접근할 수 있다.
-            ctx.addIssue({
-                code: "custom",
-                message: "This username is already taken",
-                path: ["username"],
-                fatal: true, // 치명적 이슈
-            });
-            return z.NEVER; // 이후 refine은 실행하지 않는다.
-        }
-    })
     .superRefine(async ({ email }, ctx) => {
         const user = await db.user.findUnique({
             where: {
