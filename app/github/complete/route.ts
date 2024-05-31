@@ -32,24 +32,41 @@ export async function GET(request: NextRequest) {
     });
 
     if (user) {
+        // 이미 가입 + 등록된 계정
         await setSession(user.id);
         return redirect("/profile");
     }
 
-    const existUserName = await db.user.findUnique({
-        where: { username: login },
+    const existUserEmail = await db.user.findUnique({
+        where: { email: email },
         select: { id: true },
     });
 
-    const newUser = await db.user.create({
-        data: {
-            username: Boolean(existUserName) ? login + id : login,
-            github_id: id + "",
-            avatar: avatar_url,
-        },
-        select: { id: true },
-    });
+    if (Boolean(existUserEmail)) {
+        // 이미 가입된 메일
+        const newUser = await db.user.update({
+            where: {
+                email: email,
+            },
+            data: {
+                github_id: id + "",
+                avatar: avatar_url,
+            },
+            select: { id: true },
+        });
+        await setSession(newUser.id);
+    } else {
+        // 새로운 계정
+        const newUser = await db.user.create({
+            data: {
+                username: login,
+                github_id: id + "",
+                avatar: avatar_url,
+            },
+            select: { id: true },
+        });
+        await setSession(newUser.id);
+    }
 
-    await setSession(newUser.id);
     return redirect("/profile");
 }
