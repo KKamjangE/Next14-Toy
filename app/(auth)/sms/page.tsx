@@ -1,8 +1,8 @@
 "use client";
 
+import { smsLogin } from "@/app/(auth)/sms/actions";
 import Button from "@/components/button";
 import Input from "@/components/input";
-import { smsLogin } from "@/app/sms/actions";
 import { useFormState } from "react-dom";
 
 const initialState = {

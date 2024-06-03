@@ -1,9 +1,9 @@
 "use client";
 
+import { createAccount } from "@/app/(auth)/create-account/actions";
 import Button from "@/components/button";
 import Input from "@/components/input";
 import SocialLogin from "@/components/social-login";
-import { createAccount } from "@/app/create-account/actions";
 import { PASSWORD_MIN_LENGTH } from "@/lib/constants";
 import { useFormState } from "react-dom";
 
