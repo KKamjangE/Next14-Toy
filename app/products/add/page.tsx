@@ -10,7 +10,7 @@ import { useFormState } from "react-dom";
 export default function AddProduct() {
     const [preview, setPreview] = useState("");
     const [uploadUrl, setUploadUrl] = useState("");
-    const [state, action] = useFormState(uploadProduct, null);
+    const [photoId, setPhotoId] = useState("");
 
     const onImageChange = async (
         event: React.ChangeEvent<HTMLInputElement>,
@@ -36,12 +36,42 @@ export default function AddProduct() {
 
         const url = URL.createObjectURL(file); // 파일이 업로드된 브라우저 메모리를 참조해서 주소를 생성한다.
         setPreview(url);
+
         const { success, result } = await getUploadUrl();
         if (success) {
             const { id, uploadURL } = result;
             setUploadUrl(uploadURL);
+            setPhotoId(id);
         }
     };
+
+    const interceptAction = async (_: any, formData: FormData) => {
+        const file = formData.get("photo");
+        if (!file) {
+            return;
+        }
+
+        const cloudflareForm = new FormData();
+        cloudflareForm.append("file", file);
+        // 이미지 업로드
+        const response = await fetch(uploadUrl, {
+            method: "POST",
+            body: cloudflareForm,
+        });
+
+        if (response.status !== 200) {
+            return;
+        }
+
+        formData.set(
+            "photo",
+            `https://imagedelivery.net/qWs23S0Dinq76C8FV_L81g/${photoId}`,
+        ); // Cloud Flare 주소로 데이터 변조
+
+        return uploadProduct(_, formData);
+    };
+
+    const [state, action] = useFormState(interceptAction, null);
 
     return (
         <div>

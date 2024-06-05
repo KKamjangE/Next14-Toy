@@ -25,7 +25,6 @@ export async function uploadProduct(prevState: any, formData: FormData) {
     const result = productSchema.safeParse(data);
 
     if (!result.success) {
-        console.log(result.error.flatten());
         return result.error.flatten();
     } else {
         const session = await getSession();
