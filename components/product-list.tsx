@@ -11,7 +11,6 @@ interface ProductListProps {
 
 export default function ProductList({ initialProducts }: ProductListProps) {
     const [products, setProducts] = useState(initialProducts);
-    const [isLoading, setIsLoading] = useState(false);
     const [page, setPage] = useState(0);
     const [isLastPage, setIsLastPage] = useState(false);
     const trigger = useRef<HTMLSpanElement>(null);
@@ -24,7 +23,6 @@ export default function ProductList({ initialProducts }: ProductListProps) {
                 const element = entries[0];
                 if (element.isIntersecting && trigger.current) {
                     observer.unobserve(trigger.current); // 관찰 종료
-                    setIsLoading(true);
                     const newProducts = await getMoreProducts(page + 1);
                     if (newProducts.length !== 0) {
                         setPage((prev) => prev + 1);
@@ -32,13 +30,13 @@ export default function ProductList({ initialProducts }: ProductListProps) {
                     } else {
                         setIsLastPage(true);
                     }
-                    setIsLoading(false);
                 }
             },
             {
                 threshold: 1.0, // 관찰 대상이 100% 보여야 isIntersecting 변경
             },
         );
+
         if (trigger.current) {
             observer.observe(trigger.current); // 관찰 시작
         }
@@ -56,10 +54,8 @@ export default function ProductList({ initialProducts }: ProductListProps) {
             {isLastPage ? null : (
                 <span
                     ref={trigger}
-                    className="mx-auto w-fit rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold hover:opacity-90 active:scale-95"
-                >
-                    {isLoading ? "로딩 중" : "Load more"}
-                </span>
+                    className="mx-auto hidden w-fit rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold hover:opacity-90 active:scale-95"
+                />
             )}
         </div>
     );
