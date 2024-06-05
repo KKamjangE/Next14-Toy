@@ -88,7 +88,7 @@ export default async function ProductDetail({
             </div>
             <div className="p-5">
                 <h1 className="text-2xl font-semibold">{product.title}</h1>
-                <p>{product.discription}</p>
+                <p>{product.description}</p>
             </div>
             <div className="fixed bottom-0 left-0 flex w-full items-center justify-between bg-neutral-800 p-5 pb-10">
                 <span className="text-lg font-semibold">
