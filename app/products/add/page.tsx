@@ -22,18 +22,6 @@ export default function AddProduct() {
         if (!files) return;
         const file = files[0];
 
-        if (!file.type.startsWith("image/")) {
-            setPreview("");
-            event.target.value = "";
-            return alert("이미지 파일만 업로드 가능합니다.");
-        }
-
-        if (file.size > 1024 * 1024 * 2) {
-            setPreview("");
-            event.target.value = "";
-            return alert("이미지 크기는 2MB를 초과할 수 없습니다.");
-        }
-
         const url = URL.createObjectURL(file); // 파일이 업로드된 브라우저 메모리를 참조해서 주소를 생성한다.
         setPreview(url);
 
@@ -47,8 +35,22 @@ export default function AddProduct() {
 
     const interceptAction = async (_: any, formData: FormData) => {
         const file = formData.get("photo");
-        if (!file) {
-            return;
+
+        // 파일 타입 검사
+        if (!(file instanceof File)) {
+            return alert("파일이 유효하지 않습니다.");
+        }
+
+        // 파일 확장자 검사
+        if (!file.type.startsWith("image/")) {
+            setPreview("");
+            return alert("이미지 파일만 업로드 가능합니다.");
+        }
+
+        // 파일 크기 검사
+        if (file.size > 1024 * 1024 * 2) {
+            setPreview("");
+            return alert("이미지 크기는 2MB를 초과할 수 없습니다.");
         }
 
         const cloudflareForm = new FormData();
