@@ -1,7 +1,6 @@
 "use server";
 
 import z from "zod";
-import fs from "fs/promises";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
@@ -22,25 +21,6 @@ export async function uploadProduct(prevState: any, formData: FormData) {
         price: formData.get("price"),
         description: formData.get("description"),
     };
-
-    if (data.photo instanceof File) {
-        const photoData = await data.photo.arrayBuffer();
-        if (photoData.byteLength === 0) {
-            return {
-                fieldErrors: {
-                    photo: ["이미지를 등록해주세요!"],
-                    title: [],
-                    price: [],
-                    description: [],
-                },
-            };
-        }
-        await fs.appendFile(
-            `./public/${data.photo.name}`,
-            Buffer.from(photoData),
-        );
-        data.photo = `/${data.photo.name}`;
-    }
 
     const result = productSchema.safeParse(data);
 
@@ -71,4 +51,18 @@ export async function uploadProduct(prevState: any, formData: FormData) {
             // redirect("/products");
         }
     }
+}
+
+// Cloud Flare upload url 요청
+export async function getUploadUrl() {
+    const response = await fetch(
+        `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUD_FLARE_ACCOUNT_ID}/images/v2/direct_upload`,
+        {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${process.env.CLOUD_FLARE_TOKEN}`,
+            },
+        },
+    );
+    return await response.json();
 }

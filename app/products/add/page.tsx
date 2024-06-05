@@ -4,14 +4,17 @@ import { PhotoIcon } from "@heroicons/react/24/solid";
 import Input from "@/components/input";
 import Button from "@/components/button";
 import { useState } from "react";
-import { uploadProduct } from "@/app/products/add/actions";
+import { getUploadUrl, uploadProduct } from "@/app/products/add/actions";
 import { useFormState } from "react-dom";
 
 export default function AddProduct() {
     const [preview, setPreview] = useState("");
+    const [uploadUrl, setUploadUrl] = useState("");
     const [state, action] = useFormState(uploadProduct, null);
 
-    const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onImageChange = async (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
         const {
             target: { files },
         } = event;
@@ -33,6 +36,11 @@ export default function AddProduct() {
 
         const url = URL.createObjectURL(file); // 파일이 업로드된 브라우저 메모리를 참조해서 주소를 생성한다.
         setPreview(url);
+        const { success, result } = await getUploadUrl();
+        if (success) {
+            const { id, uploadURL } = result;
+            setUploadUrl(uploadURL);
+        }
     };
 
     return (
