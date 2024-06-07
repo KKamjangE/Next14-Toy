@@ -17,9 +17,10 @@ export default function AddProduct() {
         register,
         handleSubmit,
         setValue,
+        setError,
         formState: { errors },
     } = useForm<ProductType>({
-        resolver: zodResolver(productSchema),
+        resolver: zodResolver(productSchema), // zod schema 주입
     });
 
     const onImageChange = async (
@@ -47,6 +48,7 @@ export default function AddProduct() {
         }
     };
 
+    // react hook form의 handleSubmit으로 감싼다.
     const onSubmit = handleSubmit(async (data: ProductType) => {
         // 파일 타입 검사
         if (!(file instanceof File)) {
@@ -82,7 +84,14 @@ export default function AddProduct() {
         formData.append("price", data.price + "");
         formData.append("description", data.description);
         formData.append("photo", data.photo);
-        return uploadProduct(formData);
+        const errors = await uploadProduct(formData);
+        if (errors) {
+            for (const [field, message] of Object.entries(errors.fieldErrors)) {
+                setError(field as keyof ProductType, {
+                    message: message.join(", "),
+                });
+            }
+        }
     });
 
     const onValid = async () => {
