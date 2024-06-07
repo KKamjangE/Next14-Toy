@@ -2,7 +2,7 @@ import { deletePhoto, getProduct } from "@/app/products/[id]/actions";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { formatToWon } from "@/lib/utils";
-import { UserIcon } from "@heroicons/react/24/solid";
+import { ChevronLeftIcon, UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -63,6 +63,12 @@ export default async function ProductDetail({
                     alt={product.title}
                     className="object-cover"
                 />
+                <Link
+                    href="/products"
+                    className="fixed left-0 top-0 m-5 text-white"
+                >
+                    <ChevronLeftIcon className="size-10" />
+                </Link>
             </div>
             <div className="flex items-center gap-3 border-b border-neutral-700 p-5">
                 <div className="size-10 overflow-hidden rounded-full">
