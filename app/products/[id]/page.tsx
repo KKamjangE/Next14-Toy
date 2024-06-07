@@ -51,7 +51,7 @@ export default async function ProductDetail({
             deletePhoto(photoId);
         }
 
-        redirect("/products");
+        redirect("/home");
     }
 
     return (
@@ -64,7 +64,7 @@ export default async function ProductDetail({
                     className="object-cover"
                 />
                 <Link
-                    href="/products"
+                    href="/home"
                     className="fixed left-0 top-0 m-5 text-white"
                 >
                     <ChevronLeftIcon className="size-10" />
