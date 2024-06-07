@@ -1,7 +1,8 @@
+import { deletePhoto, getProduct } from "@/app/products/[id]/actions";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { formatToWon } from "@/lib/utils";
-import { UserIcon } from "@heroicons/react/24/solid";
+import { ChevronLeftIcon, UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -13,22 +14,6 @@ async function getIsOwner(userId: number) {
         return session.id === userId;
     }
     return false;
-}
-
-async function getProduct(id: number) {
-    const product = await db.product.findUnique({
-        where: { id },
-        include: {
-            user: {
-                select: {
-                    username: true,
-                    avatar: true,
-                },
-            },
-        },
-    });
-
-    return product;
 }
 
 export default async function ProductDetail({
@@ -53,10 +38,20 @@ export default async function ProductDetail({
     async function deleteProduct() {
         "use server";
 
-        await db.product.delete({
+        const deletedProduct = await db.product.delete({
             where: { id },
+            select: {
+                photo: true,
+            },
         });
-        redirect("/products");
+
+        if (deletedProduct) {
+            const parts = deletedProduct.photo.split("/");
+            const photoId = parts[parts.length - 1];
+            deletePhoto(photoId);
+        }
+
+        redirect("/home");
     }
 
     return (
@@ -64,10 +59,16 @@ export default async function ProductDetail({
             <div className="relative aspect-square">
                 <Image
                     fill
-                    src={product.photo}
+                    src={`${product.photo}/public`}
                     alt={product.title}
                     className="object-cover"
                 />
+                <Link
+                    href="/home"
+                    className="fixed left-0 top-0 m-5 text-white"
+                >
+                    <ChevronLeftIcon className="size-10" />
+                </Link>
             </div>
             <div className="flex items-center gap-3 border-b border-neutral-700 p-5">
                 <div className="size-10 overflow-hidden rounded-full">
@@ -88,7 +89,7 @@ export default async function ProductDetail({
             </div>
             <div className="p-5">
                 <h1 className="text-2xl font-semibold">{product.title}</h1>
-                <p>{product.discription}</p>
+                <p>{product.description}</p>
             </div>
             <div className="fixed bottom-0 left-0 flex w-full items-center justify-between bg-neutral-800 p-5 pb-10">
                 <span className="text-lg font-semibold">

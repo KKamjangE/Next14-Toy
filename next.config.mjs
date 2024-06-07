@@ -6,6 +6,10 @@ const nextConfig = {
             {
                 hostname: "avatars.githubusercontent.com",
             },
+            {
+                hostname: "imagedelivery.net",
+                pathname: "/qWs23S0Dinq76C8FV_L81g/**",
+            },
         ],
     },
 };

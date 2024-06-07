@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     }
 
     const existUserEmail = await db.user.findUnique({
-        where: { email: email },
+        where: { email },
         select: { id: true },
     });
 
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
         // 이미 가입된 메일
         const newUser = await db.user.update({
             where: {
-                email: email,
+                email,
             },
             data: {
                 github_id: id + "",
@@ -60,6 +60,7 @@ export async function GET(request: NextRequest) {
         const newUser = await db.user.create({
             data: {
                 username: login,
+                email,
                 github_id: id + "",
                 avatar: avatar_url,
             },
