@@ -5,12 +5,22 @@ import Input from "@/components/input";
 import Button from "@/components/button";
 import { useState } from "react";
 import { getUploadUrl, uploadProduct } from "@/app/products/add/actions";
-import { useFormState } from "react-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ProductType, productSchema } from "@/app/products/add/schema";
 
 export default function AddProduct() {
     const [preview, setPreview] = useState("");
     const [uploadUrl, setUploadUrl] = useState("");
-    const [photoId, setPhotoId] = useState("");
+    const [file, setFile] = useState<File | null>(null);
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm<ProductType>({
+        resolver: zodResolver(productSchema),
+    });
 
     const onImageChange = async (
         event: React.ChangeEvent<HTMLInputElement>,
@@ -24,18 +34,20 @@ export default function AddProduct() {
 
         const url = URL.createObjectURL(file); // 파일이 업로드된 브라우저 메모리를 참조해서 주소를 생성한다.
         setPreview(url);
+        setFile(file);
 
         const { success, result } = await getUploadUrl();
         if (success) {
             const { id, uploadURL } = result;
             setUploadUrl(uploadURL);
-            setPhotoId(id);
+            setValue(
+                "photo",
+                `https://imagedelivery.net/qWs23S0Dinq76C8FV_L81g/${id}`,
+            );
         }
     };
 
-    const interceptAction = async (_: any, formData: FormData) => {
-        const file = formData.get("photo");
-
+    const onSubmit = handleSubmit(async (data: ProductType) => {
         // 파일 타입 검사
         if (!(file instanceof File)) {
             return alert("파일이 유효하지 않습니다.");
@@ -65,19 +77,21 @@ export default function AddProduct() {
             return;
         }
 
-        formData.set(
-            "photo",
-            `https://imagedelivery.net/qWs23S0Dinq76C8FV_L81g/${photoId}`,
-        ); // Cloud Flare 주소로 데이터 변조
+        const formData = new FormData();
+        formData.append("title", data.title);
+        formData.append("price", data.price + "");
+        formData.append("description", data.description);
+        formData.append("photo", data.photo);
+        return uploadProduct(formData);
+    });
 
-        return uploadProduct(_, formData);
+    const onValid = async () => {
+        await onSubmit();
     };
-
-    const [state, action] = useFormState(interceptAction, null);
 
     return (
         <div>
-            <form action={action} className="flex flex-col gap-5 p-5">
+            <form action={onValid} className="flex flex-col gap-5 p-5">
                 <label
                     htmlFor="photo"
                     className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed border-neutral-300 bg-cover bg-center text-neutral-300"
@@ -89,9 +103,9 @@ export default function AddProduct() {
                             <div className="text-sm text-neutral-400">
                                 사진을 추가해주세요.
                             </div>
-                            {state?.fieldErrors.photo && (
+                            {errors.photo?.message && (
                                 <span className="text-sm text-red-500">
-                                    {state?.fieldErrors.photo}
+                                    {errors.photo?.message}
                                 </span>
                             )}
                         </>
@@ -106,25 +120,25 @@ export default function AddProduct() {
                     onChange={onImageChange}
                 />
                 <Input
-                    name="title"
                     placeholder="제목"
                     type="text"
                     required
-                    errors={state?.fieldErrors.title}
+                    errors={[errors.title?.message ?? ""]}
+                    {...register("title")}
                 />
                 <Input
-                    name="price"
                     placeholder="가격"
                     type="number"
                     required
-                    errors={state?.fieldErrors.price}
+                    errors={[errors.price?.message ?? ""]}
+                    {...register("price")}
                 />
                 <Input
-                    name="description"
                     placeholder="자세한 설명"
                     type="text"
                     required
-                    errors={state?.fieldErrors.description}
+                    errors={[errors.description?.message ?? ""]}
+                    {...register("description")}
                 />
                 <Button text="작성 완료" />
             </form>
