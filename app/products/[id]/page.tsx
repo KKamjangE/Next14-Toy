@@ -1,3 +1,4 @@
+import { deletePhoto, getProduct } from "@/app/products/[id]/actions";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { formatToWon } from "@/lib/utils";
@@ -13,22 +14,6 @@ async function getIsOwner(userId: number) {
         return session.id === userId;
     }
     return false;
-}
-
-async function getProduct(id: number) {
-    const product = await db.product.findUnique({
-        where: { id },
-        include: {
-            user: {
-                select: {
-                    username: true,
-                    avatar: true,
-                },
-            },
-        },
-    });
-
-    return product;
 }
 
 export default async function ProductDetail({
@@ -53,9 +38,19 @@ export default async function ProductDetail({
     async function deleteProduct() {
         "use server";
 
-        await db.product.delete({
+        const deletedProduct = await db.product.delete({
             where: { id },
+            select: {
+                photo: true,
+            },
         });
+
+        if (deletedProduct) {
+            const parts = deletedProduct.photo.split("/");
+            const photoId = parts[parts.length - 1];
+            deletePhoto(photoId);
+        }
+
         redirect("/products");
     }
 
