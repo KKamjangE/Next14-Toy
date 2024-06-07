@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
         // 사용자 세션이 존재한다면(로그인)
         if (exists) {
             // public 페이지에 접근한다면
-            return NextResponse.redirect(new URL("/products", request.url));
+            return NextResponse.redirect(new URL("/home", request.url));
         }
     }
 }
