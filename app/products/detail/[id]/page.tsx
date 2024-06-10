@@ -1,4 +1,4 @@
-import { deletePhoto, getProduct } from "@/app/products/[id]/actions";
+import { deletePhoto, getProduct } from "@/app/products/detail/[id]/actions";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { formatToWon } from "@/lib/utils";
