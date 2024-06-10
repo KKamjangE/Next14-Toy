@@ -57,14 +57,14 @@ export default async function Modal({ params }: { params: { id: string } }) {
                                 <UserIcon />
                             )}
                         </div>
-                        <h3>{product.user.username}</h3>
+                        <h3 className="text-lg font-semibold">
+                            {product.user.username}
+                        </h3>
                     </div>
-                    <div className="py-5">
-                        <h1 className="text-2xl font-semibold">
-                            {product.title}
-                        </h1>
-                        <p>{product.description}</p>
-                    </div>
+                    <h1 className="py-2 text-2xl font-semibold">
+                        {product.title}
+                    </h1>
+                    <p>{product.description}</p>
                     <div className="flex items-center justify-between">
                         <span className="text-lg font-semibold">
                             {formatToWon(product.price)}원
