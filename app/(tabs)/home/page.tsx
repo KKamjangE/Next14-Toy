@@ -8,6 +8,7 @@ import Link from "next/link";
 // 데이터베이스 접근 함수 캐싱하기
 const getCachedProducts = nextCache(getInitialProducts, ["home-products"], {
     revalidate: 60,
+    tags: ["home-products"],
 });
 
 async function getInitialProducts() {
@@ -38,8 +39,12 @@ export const metadata = {
     title: "Home",
 };
 
+// export const dynamic = "force-dynamic"; // 빌드할때 강제로 동적 페이지로 만든다.
+
+// export const revalidate = 60; // 60초마다 페이지를 재검증한다. (ISR)
+
 export default async function Home() {
-    const initialProducts = await getInitialProducts();
+    const initialProducts = await getCachedProducts();
     return (
         <div>
             <ProductList initialProducts={initialProducts} />
