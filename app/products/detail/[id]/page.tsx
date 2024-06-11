@@ -4,7 +4,6 @@ import {
     getProductTitle,
 } from "@/app/products/detail/[id]/actions";
 import db from "@/lib/db";
-import { getSession } from "@/lib/session";
 import { formatToWon } from "@/lib/utils";
 import { ChevronLeftIcon, UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
@@ -14,10 +13,10 @@ import { unstable_cache as nextCache } from "next/cache";
 
 // 사용자가 제품의 주인인지 확인하는 함수
 async function getIsOwner(userId: number) {
-    const session = await getSession();
-    if (session.id) {
-        return session.id === userId;
-    }
+    // const session = await getSession();
+    // if (session.id) {
+    //     return session.id === userId;
+    // }
     return false;
 }
 
@@ -131,4 +130,15 @@ export default async function ProductDetail({
             </div>
         </div>
     );
+}
+
+// 파라미터([id])가 뭔지 정의해준다. (SSG)
+// 새로운 product가 생성되면 해당 페이지는 dynamic 페이지가 되었다가 HTML로 저장되고 이후에는 static 페이지로 취급된다.
+export async function generateStaticParams() {
+    const products = await db.product.findMany({
+        select: {
+            id: true,
+        },
+    });
+    return products.map((product) => ({ id: product.id + "" }));
 }
