@@ -51,12 +51,12 @@ export default function ProductList({ initialProducts }: ProductListProps) {
             {products.map((product) => (
                 <ListProduct key={product.id} {...product} />
             ))}
-            {isLastPage ? null : (
+            {/* {isLastPage ? null : (
                 <span
                     ref={trigger}
                     className="mx-auto hidden w-fit rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold hover:opacity-90 active:scale-95"
                 />
-            )}
+            )} */}
         </div>
     );
 }

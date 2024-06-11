@@ -1,4 +1,8 @@
-import { deletePhoto, getProduct } from "@/app/products/detail/[id]/actions";
+import {
+    deletePhoto,
+    getProduct,
+    getProductTitle,
+} from "@/app/products/detail/[id]/actions";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { formatToWon } from "@/lib/utils";
@@ -6,6 +10,7 @@ import { ChevronLeftIcon, UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { unstable_cache as nextCache } from "next/cache";
 
 // 사용자가 제품의 주인인지 확인하는 함수
 async function getIsOwner(userId: number) {
@@ -16,8 +21,16 @@ async function getIsOwner(userId: number) {
     return false;
 }
 
+const getCachedProduct = nextCache(getProduct, ["product-detail"], {
+    tags: ["product-detail"],
+});
+
+const getCachedProductTitle = nextCache(getProductTitle, ["product-title"], {
+    tags: ["product-title"],
+});
+
 export async function generateMetadata({ params }: { params: { id: string } }) {
-    const product = await getProduct(Number(params.id));
+    const product = await getCachedProductTitle(Number(params.id));
     return {
         title: `Product ${product?.title}`,
     };
@@ -34,7 +47,7 @@ export default async function ProductDetail({
         return notFound();
     }
 
-    const product = await getProduct(id);
+    const product = await getCachedProduct(id);
 
     if (!product) {
         return notFound();
