@@ -28,6 +28,10 @@ export type InitialProducts = Prisma.PromiseReturnType<
     typeof getInitialProducts
 >;
 
+export const metadata = {
+    title: "Home",
+};
+
 export default async function Home() {
     const initialProducts = await getInitialProducts();
     return (
