@@ -39,7 +39,7 @@ export const metadata = {
 };
 
 export default async function Home() {
-    const initialProducts = await getCachedProducts();
+    const initialProducts = await getInitialProducts();
     return (
         <div>
             <ProductList initialProducts={initialProducts} />
