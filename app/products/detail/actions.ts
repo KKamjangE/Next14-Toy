@@ -2,7 +2,6 @@
 
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
-import { Prisma } from "@prisma/client";
 import { unstable_cache as nextCache } from "next/cache";
 
 export async function getProduct(id: number) {

@@ -2,7 +2,6 @@
 
 import { productSchema } from "@/app/products/add/schema";
 import db from "@/lib/db";
-import { getSession } from "@/lib/session";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -29,7 +28,7 @@ export async function deleteProduct(id: number) {
     });
 
     if (deletedProduct) {
-        deletePhoto(deletedProduct.photo);
+        await deletePhoto(deletedProduct.photo);
     }
 
     revalidatePath("/home");
@@ -50,26 +49,23 @@ export async function updateProduct(formData: FormData) {
     if (!result.success) {
         return result.error.flatten();
     } else {
-        const session = await getSession();
-        if (session.id) {
-            const product = await db.product.update({
-                where: {
-                    id: result.data.id,
-                },
-                data: {
-                    photo: result.data.photo,
-                    price: result.data.price,
-                    title: result.data.title,
-                    description: result.data.description,
-                },
-                select: {
-                    id: true,
-                },
-            });
+        const product = await db.product.update({
+            where: {
+                id: result.data.id,
+            },
+            data: {
+                photo: result.data.photo,
+                price: result.data.price,
+                title: result.data.title,
+                description: result.data.description,
+            },
+            select: {
+                id: true,
+            },
+        });
 
-            revalidateTag("product-detail");
-            revalidatePath("/home");
-            redirect(`/products/detail/${product.id}`);
-        }
+        revalidateTag("product-detail");
+        revalidatePath("/home");
+        redirect(`/products/detail/${product.id}`);
     }
 }

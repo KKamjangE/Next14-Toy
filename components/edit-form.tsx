@@ -181,6 +181,7 @@ export default function EditForm({
                 <Button text="작성 완료" />
                 <button
                     onClick={onDelete}
+                    type="button"
                     className="h-10 w-full whitespace-nowrap rounded-md bg-red-500 font-medium text-white transition-colors hover:bg-red-400"
                 >
                     Delete Product
