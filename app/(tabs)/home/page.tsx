@@ -2,14 +2,7 @@ import ProductList from "@/components/product-list";
 import db from "@/lib/db";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { Prisma } from "@prisma/client";
-import { unstable_cache as nextCache } from "next/cache";
 import Link from "next/link";
-
-// 데이터베이스 접근 함수 캐싱하기
-const getCachedProducts = nextCache(getInitialProducts, ["home-products"], {
-    revalidate: 60,
-    tags: ["home-products"],
-});
 
 async function getInitialProducts() {
     const products = db.product.findMany({
@@ -44,7 +37,7 @@ export const metadata = {
 // export const revalidate = 60; // 60초마다 페이지를 재검증한다. (ISR)
 
 export default async function Home() {
-    const initialProducts = await getCachedProducts();
+    const initialProducts = await getInitialProducts();
     return (
         <div>
             <ProductList initialProducts={initialProducts} />
