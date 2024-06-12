@@ -8,11 +8,10 @@ import {
     updateProduct,
 } from "@/app/products/detail/[id]/edit/actions";
 import Button from "@/components/button";
-import CloseButton from "@/components/close-button";
 import Input from "@/components/input";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function EditForm({
@@ -35,6 +34,10 @@ export default function EditForm({
     } = useForm<ProductType>({
         resolver: zodResolver(productSchema),
     });
+
+    useEffect(() => {
+        setValue("photo", product.photo);
+    }, []);
 
     const onImageChange = async (
         event: React.ChangeEvent<HTMLInputElement>,
@@ -65,27 +68,33 @@ export default function EditForm({
     };
 
     const onSubmit = handleSubmit(async (data: ProductType) => {
-        if (!(file instanceof File)) {
-            return alert("파일이 유효하지 않습니다.");
-        }
+        if (data.photo !== product.photo) {
+            if (!(file instanceof File)) {
+                return alert("파일이 유효하지 않습니다.");
+            }
 
-        if (!file.type.startsWith("image/")) {
-            setPreview("");
-            return alert("이미지 파일만 업로드 가능합니다.");
-        }
+            if (!file.type.startsWith("image/")) {
+                setPreview("");
+                return alert("이미지 파일만 업로드 가능합니다.");
+            }
 
-        if (file.size > 1024 * 1024 * 2) {
-            setPreview("");
-            return alert("이미지 크기는 2MB를 초과할 수 없습니다.");
-        }
+            if (file.size > 1024 * 1024 * 2) {
+                setPreview("");
+                return alert("이미지 크기는 2MB를 초과할 수 없습니다.");
+            }
 
-        const cloudflareForm = new FormData();
-        cloudflareForm.append("file", file);
-        const response = await fetch(uploadUrl, {
-            method: "POST",
-            body: cloudflareForm,
-        });
-        if (response.status !== 200) return;
+            const cloudflareForm = new FormData();
+            cloudflareForm.append("file", file);
+            const response = await fetch(uploadUrl, {
+                method: "POST",
+                body: cloudflareForm,
+            });
+            if (response.status === 200) {
+                deletePhoto(product.photo);
+            } else {
+                return;
+            }
+        }
 
         const formData = new FormData();
         formData.append("id", id + "");
@@ -100,8 +109,6 @@ export default function EditForm({
                     message: message.join(", "),
                 });
             }
-        } else {
-            deletePhoto(product.photo);
         }
     });
 
