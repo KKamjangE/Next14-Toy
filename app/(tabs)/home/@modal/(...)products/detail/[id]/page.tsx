@@ -32,7 +32,7 @@ export default async function Modal({ params }: { params: { id: string } }) {
     }
 
     return (
-        <div className="absolute left-0 top-0 z-50 flex h-full w-full flex-col items-center justify-center bg-black bg-opacity-60">
+        <div className="fixed left-0 top-0 z-50 flex h-full w-full flex-col items-center justify-center bg-black bg-opacity-60">
             <CloseButton />
             <div className="flex aspect-square h-1/2 w-full max-w-screen-sm flex-col justify-center">
                 <div className="relative aspect-square">
