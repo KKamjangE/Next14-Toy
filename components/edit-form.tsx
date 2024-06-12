@@ -8,6 +8,7 @@ import {
     updateProduct,
 } from "@/app/products/detail/[id]/edit/actions";
 import Button from "@/components/button";
+import CloseButton from "@/components/close-button";
 import Input from "@/components/input";
 import { PhotoIcon } from "@heroicons/react/24/solid";
 import { zodResolver } from "@hookform/resolvers/zod";

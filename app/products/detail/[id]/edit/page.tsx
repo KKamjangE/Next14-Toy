@@ -1,4 +1,4 @@
-import EditForm from "@/app/products/detail/[id]/edit/edit-form";
+import EditForm from "@/components/edit-form";
 import { getCachedProduct, getIsOwner } from "@/app/products/detail/actions";
 import { notFound } from "next/navigation";
 
