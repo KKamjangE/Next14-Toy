@@ -6,6 +6,7 @@ import { unstable_cache as nextCache } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import LikeButton from "@/components/like-button";
+import { getComments } from "@/app/posts/[id]/actions";
 
 async function getPost(id: number) {
     try {
@@ -93,6 +94,8 @@ export default async function PostDetail({
 
     const { isLiked, likeCount } = await getCachedLikeStatus(id);
 
+    const commets = await getComments(id);
+
     return (
         <div className="p-5 text-white">
             <div className="mb-2 flex items-center gap-2">
@@ -103,20 +106,18 @@ export default async function PostDetail({
                     src={post.user.avatar!}
                     alt={post.user.username}
                 />
-                <div>
+                <div className="flex flex-col">
                     <span className="text-sm font-semibold">
                         {post.user.username}
                     </span>
-                    <div className="text-xs">
-                        <span>
-                            {formatToTimeAge(post.created_at.toString())}
-                        </span>
-                    </div>
+                    <span className="text-xs">
+                        {formatToTimeAge(post.created_at.toString())}
+                    </span>
                 </div>
             </div>
             <h2 className="text-lg font-semibold">{post.title}</h2>
             <p className="mb-5">{post.description}</p>
-            <div className="flex flex-col items-start gap-5">
+            <div className="flex flex-col items-start gap-5 border-b border-neutral-500 pb-5">
                 <div className="flex items-center gap-2 text-sm text-neutral-400">
                     <EyeIcon className="size-5" />
                     <span>조회 {post.views}</span>
@@ -127,6 +128,28 @@ export default async function PostDetail({
                     postId={id}
                 />
             </div>
+            {commets.map((comment) => (
+                <div key={comment.id} className="my-5 flex flex-col gap-3">
+                    <div className="flex items-center gap-2">
+                        <Image
+                            width={28}
+                            height={28}
+                            src={comment.user.avatar!}
+                            alt={comment.user.username}
+                            className="size-7 overflow-hidden rounded-full"
+                        />
+                        <div className="flex flex-col">
+                            <span className="text-sm font-semibold">
+                                {comment.user.username}
+                            </span>
+                            <span className="text-xs">
+                                {formatToTimeAge(comment.created_at.toString())}
+                            </span>
+                        </div>
+                    </div>
+                    <p className="">{comment.payload}</p>
+                </div>
+            ))}
         </div>
     );
 }

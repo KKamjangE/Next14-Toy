@@ -35,3 +35,21 @@ export const dislikePost = async (postId: number) => {
         // 중복 클릭 방지
     }
 };
+
+export async function getComments(postId: number) {
+    const comments = await db.comment.findMany({
+        where: {
+            postId,
+        },
+        include: {
+            user: {
+                select: {
+                    avatar: true,
+                    username: true,
+                },
+            },
+        },
+    });
+
+    return comments;
+}
