@@ -20,9 +20,13 @@ export async function getProduct(id: number) {
     return product;
 }
 
-export const getCachedProduct = nextCache(getProduct, ["product-detail"], {
-    tags: ["product-detail"],
-});
+export function getCachedProduct(productId: number) {
+    const cachedOperation = nextCache(getProduct, ["product-detail"], {
+        tags: [`product-detail-${productId}`],
+    });
+
+    return cachedOperation(productId);
+}
 
 export async function getIsOwner(userId: number) {
     const session = await getSession();

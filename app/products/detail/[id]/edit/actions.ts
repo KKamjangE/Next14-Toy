@@ -64,7 +64,7 @@ export async function updateProduct(formData: FormData) {
             },
         });
 
-        revalidateTag("product-detail");
+        revalidateTag(`product-detail-${product.id}`);
         revalidatePath("/home");
         redirect(`/products/detail/${product.id}`);
     }
