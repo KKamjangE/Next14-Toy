@@ -20,8 +20,8 @@ model User {
   tokens     SMSToken[]
   products   Product[]
   posts      Post[]
-  Comment    Comment[]
-  Like       Like[]
+  comments   Comment[]
+  likes      Like[]
 }
 
 model SMSToken {
