@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCachedProduct, getIsOwner } from "@/app/products/detail/actions";
+import { createChatRoom } from "@/app/products/detail/[id]/actions";
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
     const product = await getCachedProduct(Number(params.id));
@@ -30,6 +31,10 @@ export default async function ProductDetail({
     }
 
     const isOwner = await getIsOwner(product.userId);
+
+    const onClickChat = async () => {
+        await createChatRoom(product.userId);
+    };
 
     return (
         <div className="mb-28">
@@ -81,12 +86,11 @@ export default async function ProductDetail({
                             Edit Product
                         </Link>
                     ) : (
-                        <Link
-                            href={``}
-                            className="rounded-md bg-orange-500 px-5 py-2.5 font-semibold text-white"
-                        >
-                            채팅하기
-                        </Link>
+                        <form action={onClickChat}>
+                            <button className="rounded-md bg-orange-500 px-5 py-2.5 font-semibold text-white">
+                                채팅하기
+                            </button>
+                        </form>
                     )}
                 </div>
             </div>
