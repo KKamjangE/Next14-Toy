@@ -84,3 +84,13 @@ export async function addComment(formData: FormData) {
 
     revalidateTag(`post-comments-${result.data.postId}`);
 }
+
+export async function deleteComment(commentId: number, postId: number) {
+    await db.comment.delete({
+        where: {
+            id: commentId,
+        },
+    });
+
+    revalidateTag(`post-comments-${postId}`);
+}

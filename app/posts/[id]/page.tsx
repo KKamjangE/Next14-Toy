@@ -6,8 +6,8 @@ import { unstable_cache as nextCache } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import LikeButton from "@/components/like-button";
-import CommentForm from "@/components/comment-form";
 import { Prisma } from "@prisma/client";
+import PostComments from "@/components/post-comments";
 
 async function getPost(id: number) {
     try {
@@ -86,6 +86,7 @@ async function getComments(postId: number) {
                 select: {
                     avatar: true,
                     username: true,
+                    id: true,
                 },
             },
         },
@@ -125,6 +126,8 @@ export default async function PostDetail({
 
     const comments = await getCachedComments(id);
 
+    const session = await getSession();
+
     return (
         <div className="p-5 text-white">
             <div className="mb-2 flex items-center gap-2">
@@ -157,7 +160,11 @@ export default async function PostDetail({
                     postId={id}
                 />
             </div>
-            <CommentForm postId={id} comments={comments} />
+            <PostComments
+                postId={id}
+                userId={session.id!}
+                comments={comments}
+            />
         </div>
     );
 }
