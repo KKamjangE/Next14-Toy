@@ -37,6 +37,22 @@ export const dislikePost = async (postId: number) => {
     }
 };
 
+export async function getUser() {
+    const session = await getSession();
+    const user = await db.user.findUnique({
+        where: {
+            id: session.id,
+        },
+        select: {
+            id: true,
+            avatar: true,
+            username: true,
+        },
+    });
+
+    return user;
+}
+
 export async function addComment(formData: FormData) {
     const data = {
         postId: formData.get("postId"),
@@ -65,4 +81,6 @@ export async function addComment(formData: FormData) {
             },
         });
     }
+
+    revalidateTag(`post-comments-${result.data.postId}`);
 }

@@ -1,12 +1,13 @@
 "use client";
 
-import { addComment } from "@/app/posts/[id]/actions";
+import { addComment, getUser } from "@/app/posts/[id]/actions";
 import { CommentsType } from "@/app/posts/[id]/page";
 import { CommentType, commentSchema } from "@/app/posts/[id]/schema";
 import Button from "@/components/button";
 import CommentList from "@/components/comment-list";
 import Input from "@/components/input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { notFound } from "next/navigation";
 import { useEffect, useOptimistic } from "react";
 import { useForm } from "react-hook-form";
 
@@ -27,6 +28,13 @@ export default function CommentForm({ postId, comments }: CommentFormProps) {
         resolver: zodResolver(commentSchema),
     });
 
+    const [state, reducerFn] = useOptimistic(
+        comments,
+        (prevState, payload: CommentsType) => {
+            return [...prevState, ...payload];
+        },
+    );
+
     useEffect(() => {
         setValue("postId", postId);
     }, []);
@@ -35,6 +43,24 @@ export default function CommentForm({ postId, comments }: CommentFormProps) {
         const formData = new FormData();
         formData.append("payload", data.payload);
         formData.append("postId", postId + "");
+
+        const user = await getUser();
+
+        if (!user) {
+            return notFound();
+        }
+
+        reducerFn([
+            {
+                id: 0,
+                payload: data.payload,
+                postId,
+                user,
+                userId: user.id,
+                created_at: new Date(),
+                updated_at: new Date(),
+            },
+        ]);
 
         const erorrs = await addComment(formData);
 
@@ -55,7 +81,7 @@ export default function CommentForm({ postId, comments }: CommentFormProps) {
 
     return (
         <div>
-            <CommentList comments={comments} />
+            <CommentList comments={state} />
             <form
                 action={onValid}
                 className="fixed bottom-0 left-0 flex w-full max-w-screen-sm flex-col gap-5 p-5"
