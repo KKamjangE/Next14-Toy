@@ -73,20 +73,21 @@ export default async function ProductDetail({
                     {formatToWon(product.price)}원
                 </span>
                 <div className="flex gap-5">
-                    {isOwner && (
+                    {isOwner ? (
                         <Link
                             href={`/products/detail/${id}/edit`}
                             className="bg rounded-md bg-sky-600 px-5 py-2.5 font-semibold text-white"
                         >
                             Edit Product
                         </Link>
+                    ) : (
+                        <Link
+                            href={``}
+                            className="rounded-md bg-orange-500 px-5 py-2.5 font-semibold text-white"
+                        >
+                            채팅하기
+                        </Link>
                     )}
-                    <Link
-                        href={``}
-                        className="rounded-md bg-orange-500 px-5 py-2.5 font-semibold text-white"
-                    >
-                        채팅하기
-                    </Link>
                 </div>
             </div>
         </div>
