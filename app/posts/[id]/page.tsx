@@ -94,6 +94,14 @@ async function getComments(postId: number) {
     return comments;
 }
 
+function getCachedComments(postId: number) {
+    const cachedOperation = nextCache(getComments, ["post-comments"], {
+        tags: [`post-comments-${postId}`],
+    });
+
+    return cachedOperation(postId);
+}
+
 export type CommentsType = Prisma.PromiseReturnType<typeof getComments>;
 
 export default async function PostDetail({
@@ -115,7 +123,7 @@ export default async function PostDetail({
 
     const { isLiked, likeCount } = await getCachedLikeStatus(id);
 
-    const comments = await getComments(id);
+    const comments = await getCachedComments(id);
 
     return (
         <div className="p-5 text-white">
