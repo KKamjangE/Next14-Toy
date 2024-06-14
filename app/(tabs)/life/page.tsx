@@ -4,7 +4,12 @@ import {
     ChatBubbleBottomCenterIcon,
     HandThumbUpIcon,
 } from "@heroicons/react/24/outline";
+import { unstable_cache as nextCache } from "next/cache";
 import Link from "next/link";
+
+const getCachedPosts = nextCache(getPosts, ["posts"], {
+    revalidate: 60,
+});
 
 async function getPosts() {
     const posts = await db.post.findMany({
@@ -32,7 +37,7 @@ export const metadata = {
 };
 
 export default async function Life() {
-    const posts = await getPosts();
+    const posts = await getCachedPosts();
     return (
         <div className="flex flex-col p-5">
             {posts.map((post) => (
