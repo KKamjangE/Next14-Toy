@@ -20,7 +20,7 @@ export async function getProduct(id: number) {
     return product;
 }
 
-export function getCachedProduct(productId: number) {
+export async function getCachedProduct(productId: number) {
     const cachedOperation = nextCache(getProduct, ["product-detail"], {
         tags: [`product-detail-${productId}`],
     });
