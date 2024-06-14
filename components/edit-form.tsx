@@ -37,7 +37,7 @@ export default function EditForm({
 
     useEffect(() => {
         setValue("photo", product.photo);
-    }, []);
+    });
 
     const onImageChange = async (
         event: React.ChangeEvent<HTMLInputElement>,

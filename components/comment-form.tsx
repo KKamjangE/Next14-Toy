@@ -37,7 +37,7 @@ export default function CommentForm({ postId, comments }: CommentFormProps) {
 
     useEffect(() => {
         setValue("postId", postId);
-    }, []);
+    });
 
     const onSubmit = handleSubmit(async (data: CommentType) => {
         const formData = new FormData();
