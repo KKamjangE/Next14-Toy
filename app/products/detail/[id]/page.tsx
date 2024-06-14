@@ -2,9 +2,10 @@ import { formatToWon } from "@/lib/utils";
 import { ChevronLeftIcon, UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getCachedProduct, getIsOwner } from "@/app/products/detail/actions";
-import { createChatRoom } from "@/app/products/detail/[id]/actions";
+import { getSession } from "@/lib/session";
+import db from "@/lib/db";
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
     const product = await getCachedProduct(Number(params.id));
@@ -32,8 +33,22 @@ export default async function ProductDetail({
 
     const isOwner = await getIsOwner(product.userId);
 
-    const onClickChat = async () => {
-        await createChatRoom(product.userId);
+    const createChatRoom = async () => {
+        "use server";
+
+        const session = await getSession();
+        const room = await db.chatRoom.create({
+            data: {
+                users: {
+                    connect: [{ id: product.userId }, { id: session.id }],
+                },
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        redirect(`/chats/${room.id}`);
     };
 
     return (
@@ -86,7 +101,7 @@ export default async function ProductDetail({
                             Edit Product
                         </Link>
                     ) : (
-                        <form action={onClickChat}>
+                        <form action={createChatRoom}>
                             <button className="rounded-md bg-orange-500 px-5 py-2.5 font-semibold text-white">
                                 채팅하기
                             </button>
