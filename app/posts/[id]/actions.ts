@@ -1,5 +1,6 @@
 "use server";
 
+import { commentSchema } from "@/app/posts/[id]/schema";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { revalidateTag } from "next/cache";
@@ -36,20 +37,32 @@ export const dislikePost = async (postId: number) => {
     }
 };
 
-export async function getComments(postId: number) {
-    const comments = await db.comment.findMany({
-        where: {
-            postId,
-        },
-        include: {
-            user: {
-                select: {
-                    avatar: true,
-                    username: true,
+export async function addComment(formData: FormData) {
+    const data = {
+        postId: formData.get("postId"),
+        payload: formData.get("payload"),
+    };
+
+    const result = commentSchema.safeParse(data);
+
+    if (!result.success) {
+        return result.error.flatten();
+    } else {
+        const session = await getSession();
+        await db.comment.create({
+            data: {
+                payload: result.data.payload,
+                post: {
+                    connect: {
+                        id: result.data.postId,
+                    },
+                },
+                user: {
+                    connect: {
+                        id: session.id,
+                    },
                 },
             },
-        },
-    });
-
-    return comments;
+        });
+    }
 }

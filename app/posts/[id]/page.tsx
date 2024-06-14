@@ -6,7 +6,8 @@ import { unstable_cache as nextCache } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import LikeButton from "@/components/like-button";
-import { getComments } from "@/app/posts/[id]/actions";
+import CommentForm from "@/components/comment-form";
+import { Prisma } from "@prisma/client";
 
 async function getPost(id: number) {
     try {
@@ -75,6 +76,26 @@ function getCachedLikeStatus(postId: number) {
     return cachedOperation(postId);
 }
 
+async function getComments(postId: number) {
+    const comments = await db.comment.findMany({
+        where: {
+            postId,
+        },
+        include: {
+            user: {
+                select: {
+                    avatar: true,
+                    username: true,
+                },
+            },
+        },
+    });
+
+    return comments;
+}
+
+export type CommentsType = Prisma.PromiseReturnType<typeof getComments>;
+
 export default async function PostDetail({
     params,
 }: {
@@ -94,7 +115,7 @@ export default async function PostDetail({
 
     const { isLiked, likeCount } = await getCachedLikeStatus(id);
 
-    const commets = await getComments(id);
+    const comments = await getComments(id);
 
     return (
         <div className="p-5 text-white">
@@ -128,28 +149,7 @@ export default async function PostDetail({
                     postId={id}
                 />
             </div>
-            {commets.map((comment) => (
-                <div key={comment.id} className="my-5 flex flex-col gap-3">
-                    <div className="flex items-center gap-2">
-                        <Image
-                            width={28}
-                            height={28}
-                            src={comment.user.avatar!}
-                            alt={comment.user.username}
-                            className="size-7 overflow-hidden rounded-full"
-                        />
-                        <div className="flex flex-col">
-                            <span className="text-sm font-semibold">
-                                {comment.user.username}
-                            </span>
-                            <span className="text-xs">
-                                {formatToTimeAge(comment.created_at.toString())}
-                            </span>
-                        </div>
-                    </div>
-                    <p className="">{comment.payload}</p>
-                </div>
-            ))}
+            <CommentForm postId={id} comments={comments} />
         </div>
     );
 }
