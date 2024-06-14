@@ -27,8 +27,8 @@ export default function LikeButton({
         }),
     );
 
-    const onClick = async () => {
-        reducerFn(null);
+    const onSubmit = async () => {
+        reducerFn(undefined);
         if (isLiked) {
             await dislikePost(postId);
         } else {
@@ -37,21 +37,22 @@ export default function LikeButton({
     };
 
     return (
-        <button
-            onClick={onClick}
-            className={`flex items-center gap-2 rounded-full border border-neutral-400 p-2 text-sm text-neutral-400 ${state.isLiked ? "border-orange-500 bg-orange-500 text-white" : ""}`}
-        >
-            {state.isLiked ? (
-                <>
-                    <SolidHandThumbUpIcon className="size-5" />
-                    <span>{state.likeCount}</span>
-                </>
-            ) : (
-                <>
-                    <OutlineHandThumbUpIcon className="size-5" />
-                    <span>공감하기 ({state.likeCount})</span>
-                </>
-            )}
-        </button>
+        <form action={onSubmit}>
+            <button
+                className={`flex items-center gap-2 rounded-full border border-neutral-400 p-2 text-sm text-neutral-400 ${state.isLiked ? "border-orange-500 bg-orange-500 text-white" : ""}`}
+            >
+                {state.isLiked ? (
+                    <>
+                        <SolidHandThumbUpIcon className="size-5" />
+                        <span>{state.likeCount}</span>
+                    </>
+                ) : (
+                    <>
+                        <OutlineHandThumbUpIcon className="size-5" />
+                        <span>공감하기 ({state.likeCount})</span>
+                    </>
+                )}
+            </button>
+        </form>
     );
 }
