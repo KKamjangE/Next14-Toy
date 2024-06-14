@@ -3,7 +3,7 @@
 import { productSchema } from "@/app/products/add/schema";
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
-import { revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function uploadProduct(formData: FormData) {
@@ -38,7 +38,7 @@ export async function uploadProduct(formData: FormData) {
                 },
             });
 
-            revalidateTag("home-products");
+            revalidatePath("/home");
             redirect(`/products/detail/${product.id}`);
             // redirect("/products");
         }

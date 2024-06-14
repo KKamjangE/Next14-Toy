@@ -1,35 +1,14 @@
-import {
-    deletePhoto,
-    getProduct,
-    getProductTitle,
-} from "@/app/products/detail/[id]/actions";
-import db from "@/lib/db";
 import { formatToWon } from "@/lib/utils";
 import { ChevronLeftIcon, UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { unstable_cache as nextCache } from "next/cache";
-
-// 사용자가 제품의 주인인지 확인하는 함수
-async function getIsOwner(userId: number) {
-    // const session = await getSession();
-    // if (session.id) {
-    //     return session.id === userId;
-    // }
-    return false;
-}
-
-const getCachedProduct = nextCache(getProduct, ["product-detail"], {
-    tags: ["product-detail"],
-});
-
-const getCachedProductTitle = nextCache(getProductTitle, ["product-title"], {
-    tags: ["product-title"],
-});
+import { getCachedProduct, getIsOwner } from "@/app/products/detail/actions";
+import { getSession } from "@/lib/session";
+import db from "@/lib/db";
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
-    const product = await getCachedProductTitle(Number(params.id));
+    const product = await getCachedProduct(Number(params.id));
     return {
         title: `Product ${product?.title}`,
     };
@@ -54,27 +33,26 @@ export default async function ProductDetail({
 
     const isOwner = await getIsOwner(product.userId);
 
-    async function deleteProduct() {
+    const createChatRoom = async () => {
         "use server";
 
-        const deletedProduct = await db.product.delete({
-            where: { id },
+        const session = await getSession();
+        const room = await db.chatRoom.create({
+            data: {
+                users: {
+                    connect: [{ id: product.userId }, { id: session.id }],
+                },
+            },
             select: {
-                photo: true,
+                id: true,
             },
         });
 
-        if (deletedProduct) {
-            const parts = deletedProduct.photo.split("/");
-            const photoId = parts[parts.length - 1];
-            deletePhoto(photoId);
-        }
-
-        redirect("/home");
-    }
+        redirect(`/chats/${room.id}`);
+    };
 
     return (
-        <div>
+        <div className="mb-28">
             <div className="relative aspect-square">
                 <Image
                     fill
@@ -110,23 +88,26 @@ export default async function ProductDetail({
                 <h1 className="text-2xl font-semibold">{product.title}</h1>
                 <p>{product.description}</p>
             </div>
-            <div className="fixed bottom-0 left-0 flex w-full items-center justify-between bg-neutral-800 p-5 pb-10">
+            <div className="fixed bottom-0 left-0 flex w-full items-center justify-between bg-neutral-800 p-5">
                 <span className="text-lg font-semibold">
                     {formatToWon(product.price)}원
                 </span>
-                {isOwner && (
-                    <form action={deleteProduct}>
-                        <button className="rounded-md bg-red-500 px-5 py-2.5 font-semibold text-white">
-                            Delete product
-                        </button>
-                    </form>
-                )}
-                <Link
-                    href={``}
-                    className="rounded-md bg-orange-500 px-5 py-2.5 font-semibold text-white"
-                >
-                    채팅하기
-                </Link>
+                <div className="flex gap-5">
+                    {isOwner ? (
+                        <Link
+                            href={`/products/detail/${id}/edit`}
+                            className="bg rounded-md bg-sky-600 px-5 py-2.5 font-semibold text-white"
+                        >
+                            Edit Product
+                        </Link>
+                    ) : (
+                        <form action={createChatRoom}>
+                            <button className="rounded-md bg-orange-500 px-5 py-2.5 font-semibold text-white">
+                                채팅하기
+                            </button>
+                        </form>
+                    )}
+                </div>
             </div>
         </div>
     );
@@ -134,11 +115,11 @@ export default async function ProductDetail({
 
 // 파라미터([id])가 뭔지 정의해준다. (SSG)
 // 새로운 product가 생성되면 해당 페이지는 dynamic 페이지가 되었다가 HTML로 저장되고 이후에는 static 페이지로 취급된다.
-export async function generateStaticParams() {
-    const products = await db.product.findMany({
-        select: {
-            id: true,
-        },
-    });
-    return products.map((product) => ({ id: product.id + "" }));
-}
+// export async function generateStaticParams() {
+//     const products = await db.product.findMany({
+//         select: {
+//             id: true,
+//         },
+//     });
+//     return products.map((product) => ({ id: product.id + "" }));
+// }
