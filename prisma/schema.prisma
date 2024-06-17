@@ -93,6 +93,7 @@ model ChatRoom {
 model Message {
   id         Int      @id @default(autoincrement())
   payload    String
+  isRead     Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   room       ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
