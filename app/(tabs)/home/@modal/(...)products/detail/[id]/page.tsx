@@ -1,11 +1,12 @@
 import { getIsOwner } from "@/app/products/detail/actions";
 import CloseButton from "@/components/close-button";
 import db from "@/lib/db";
+import { getSession } from "@/lib/session";
 import { formatToWon } from "@/lib/utils";
 import { UserIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 export default async function Modal({ params }: { params: { id: string } }) {
     const id = Number(params.id);
@@ -33,6 +34,24 @@ export default async function Modal({ params }: { params: { id: string } }) {
     }
 
     const isOwner = await getIsOwner(product.userId);
+
+    const createChatRoom = async () => {
+        "use server";
+
+        const session = await getSession();
+        const room = await db.chatRoom.create({
+            data: {
+                users: {
+                    connect: [{ id: product.userId }, { id: session.id }],
+                },
+            },
+            select: {
+                id: true,
+            },
+        });
+
+        redirect(`/chats/${room.id}`);
+    };
 
     return (
         <div className="fixed left-0 top-0 z-50 flex h-full w-full flex-col items-center justify-center bg-black bg-opacity-60">
@@ -81,12 +100,11 @@ export default async function Modal({ params }: { params: { id: string } }) {
                                     Edit Product
                                 </Link>
                             ) : (
-                                <Link
-                                    href={``}
-                                    className="rounded-md bg-orange-500 px-5 py-2.5 font-semibold text-white"
-                                >
-                                    채팅하기
-                                </Link>
+                                <form action={createChatRoom}>
+                                    <button className="rounded-md bg-orange-500 px-5 py-2.5 font-semibold text-white">
+                                        채팅하기
+                                    </button>
+                                </form>
                             )}
                         </div>
                     </div>
