@@ -9,6 +9,7 @@ const config: Config = {
     theme: {
         extend: {
             fontFamily: {
+                // 커스텀 클래스를 만든다.
                 roboto: "var(--roboto-text)",
                 rubik: "var(--rubik-text)",
             },
