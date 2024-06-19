@@ -1,5 +1,5 @@
-import EditForm from "@/components/edit-form";
 import { getCachedProduct, getIsOwner } from "@/app/products/detail/actions";
+import ProductEditForm from "@/components/product-edit-form";
 import { notFound } from "next/navigation";
 
 export default async function EditProduct({
@@ -24,5 +24,5 @@ export default async function EditProduct({
     if (!isOwner) {
         return notFound();
     }
-    return <EditForm id={id} product={product} />;
+    return <ProductEditForm id={id} product={product} />;
 }

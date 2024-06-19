@@ -1,7 +1,7 @@
 "use client";
 
 import { InitialMessages } from "@/app/chats/[id]/page";
-import { saveMessage } from "@/app/chats/[id]/actions";
+import { readMessages, saveMessage } from "@/app/chats/[id]/actions";
 import { formatToTimeAge } from "@/lib/utils";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/solid";
 import { RealtimeChannel, createClient } from "@supabase/supabase-js";
@@ -40,7 +40,10 @@ export default function ChatMessagesList({
             .on(
                 "broadcast",
                 { event: "message" },
-                (payload) => setMessages((prev) => [...prev, payload.payload]), // 상대방 채팅 보여주기
+                (payload) => {
+                    setMessages((prev) => [...prev, payload.payload]);
+                    readMessages(chatRoomId);
+                }, // 상대방 채팅 보여주기
             )
             .subscribe();
 
@@ -55,6 +58,7 @@ export default function ChatMessagesList({
         } = event;
         setMessage(value);
     };
+
     const onSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         // 본인 채팅 보여주기
@@ -88,11 +92,12 @@ export default function ChatMessagesList({
         await saveMessage(message, chatRoomId);
         setMessage("");
     };
+
     return (
         <div className="flex min-h-screen flex-col justify-end gap-5 p-5">
-            {messages.map((message) => (
+            {messages.map((message, index) => (
                 <div
-                    key={message.id}
+                    key={index}
                     className={`flex items-start gap-2 ${userId === message.userId ? "justify-end" : ""}`}
                 >
                     {userId === message.userId ? null : (

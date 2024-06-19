@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const roboto = Roboto({
+    subsets: ["latin"],
+    weight: ["400", "500"],
+    style: ["normal"],
+    variable: "--roboto-text", // 변수로 만들어서 var(--roboto-text) 와 같이 사용 가능하다.
+});
+
+// 변수로 만든 값은 tailwind.config에서 커스텀 클래스로 만든다.
 
 export const metadata: Metadata = {
     title: {
@@ -19,8 +26,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
+            {/* class에 variable을 전달해줘야 적용된다. */}
             <body
-                className={`${inter.className} mx-auto max-w-screen-sm bg-neutral-900 text-white`}
+                className={`${roboto.variable} mx-auto max-w-screen-sm bg-neutral-900 text-white`}
             >
                 {children}
             </body>

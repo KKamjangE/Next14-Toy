@@ -6,7 +6,14 @@ const config: Config = {
         "./components/**/*.{js,ts,jsx,tsx,mdx}",
         "./app/**/*.{js,ts,jsx,tsx,mdx}",
     ],
-    theme: {},
+    theme: {
+        extend: {
+            fontFamily: {
+                // 커스텀 클래스를 만든다.
+                roboto: "var(--roboto-text)",
+            },
+        },
+    },
     plugins: [require("@tailwindcss/forms")],
 };
 export default config;

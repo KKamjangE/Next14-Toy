@@ -94,40 +94,44 @@ export default function PostComments({
     };
 
     return (
-        <div>
-            {state.map((comment) => (
-                <div key={comment.id} className="my-5 flex flex-col gap-3">
-                    <div className="flex items-center gap-2">
-                        <Image
-                            width={28}
-                            height={28}
-                            src={comment.user.avatar!}
-                            alt={comment.user.username}
-                            className="size-7 overflow-hidden rounded-full"
-                        />
-                        <div className="flex flex-col">
-                            <span className="text-sm font-semibold">
-                                {comment.user.username}
-                            </span>
-                            <span className="text-xs">
-                                {formatToTimeAge(comment.created_at.toString())}
-                            </span>
+        <>
+            <div className="mb-36 px-5">
+                {state.map((comment) => (
+                    <div key={comment.id} className="my-5 flex flex-col gap-3">
+                        <div className="flex items-center gap-2">
+                            <Image
+                                width={28}
+                                height={28}
+                                src={comment.user.avatar!}
+                                alt={comment.user.username}
+                                className="size-7 overflow-hidden rounded-full"
+                            />
+                            <div className="flex flex-col">
+                                <span className="text-sm font-semibold">
+                                    {comment.user.username}
+                                </span>
+                                <span className="text-xs">
+                                    {formatToTimeAge(
+                                        comment.created_at.toString(),
+                                    )}
+                                </span>
+                            </div>
+                            {userId === comment.user.id ? (
+                                <button
+                                    onClick={() => onDelete(comment.id)}
+                                    className="ml-auto rounded-md bg-red-500 px-3 py-1 font-medium transition-colors hover:bg-red-400"
+                                >
+                                    삭제
+                                </button>
+                            ) : null}
                         </div>
-                        {userId === comment.user.id ? (
-                            <button
-                                onClick={() => onDelete(comment.id)}
-                                className="ml-auto rounded-md bg-red-500 px-3 py-1 font-medium transition-colors hover:bg-red-400"
-                            >
-                                삭제
-                            </button>
-                        ) : null}
+                        <p>{comment.payload}</p>
                     </div>
-                    <p>{comment.payload}</p>
-                </div>
-            ))}
+                ))}
+            </div>
             <form
                 action={onValid}
-                className="fixed bottom-0 left-0 flex w-full max-w-screen-sm flex-col gap-5 p-5"
+                className="fixed bottom-0 flex w-full max-w-screen-sm flex-col gap-3 bg-neutral-900 p-5"
             >
                 <Input
                     placeholder="hello~"
@@ -138,6 +142,6 @@ export default function PostComments({
                 />
                 <Button text="한마디 하기" />
             </form>
-        </div>
+        </>
     );
 }

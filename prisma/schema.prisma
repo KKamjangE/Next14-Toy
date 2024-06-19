@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 model User {
@@ -93,6 +94,7 @@ model ChatRoom {
 model Message {
   id         Int      @id @default(autoincrement())
   payload    String
+  isRead     Boolean  @default(false)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   room       ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
