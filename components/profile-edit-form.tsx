@@ -38,7 +38,7 @@ export default function ProfileEditForm({ user }: { user: ProfileType }) {
 
     return (
         <div className="p-5">
-            <form onSubmit={onValid} className="flex flex-col gap-5">
+            <form action={onValid} className="flex flex-col gap-5">
                 <Input
                     defaultValue={user.username}
                     type="text"
