@@ -1,5 +1,37 @@
 # Next 14 Toy Project
 
+## 명령어
+
+> 개발 서버
+
+```bash
+npm run dev
+```
+
+> 빌드
+
+```bash
+npm run build
+```
+
+> 배포 서버
+
+```bash
+npm run start
+```
+
+> 데이터베이스 SQL 생성
+
+```bash
+npx prisma migrate dev --create-only
+```
+
+> 데이터베이스 마이그레이션
+
+```bash
+npx prisma migrate deploy
+```
+
 ## 사용 기술
 
 ### 개발
