@@ -20,4 +20,5 @@
     <img src="https://img.shields.io/badge/CloudFlare-F38020?style=for-the-badge&logo=cloudflare&logoColor=white">
     <img src="https://img.shields.io/badge/twilio-F22F46?style=for-the-badge&logo=twilio&logoColor=white">
     <img src="https://img.shields.io/badge/supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white">
+    <img src="https://img.shields.io/badge/vercel-000000?style=for-the-badge&logo=vercel&logoColor=white">
 </div>
