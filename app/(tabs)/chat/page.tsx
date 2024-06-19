@@ -1,7 +1,6 @@
 import db from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { formatToTimeAge } from "@/lib/utils";
-import { unstable_cache as nextCache } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -58,13 +57,8 @@ async function getChatRooms() {
     return chatRooms;
 }
 
-const getCachedChatRooms = nextCache(getChatRooms, ["chat-rooms"], {
-    revalidate: 60,
-    tags: ["chat-rooms"],
-});
-
 export default async function Chat() {
-    const chatRooms = await getCachedChatRooms();
+    const chatRooms = await getChatRooms();
 
     return (
         <div>

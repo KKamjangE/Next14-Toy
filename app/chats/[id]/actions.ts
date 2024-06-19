@@ -33,6 +33,4 @@ export async function readMessages(chatRoomId: string) {
             isRead: true,
         },
     });
-
-    revalidateTag("chat-rooms");
 }
